@@ -1,2 +1,2 @@
 # WP Expense Manager
-## A WP plugin for your personal/business expenses accounting
+## A WP plugin for accounting your personal/business expenses
