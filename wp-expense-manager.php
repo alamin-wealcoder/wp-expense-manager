@@ -71,6 +71,7 @@ final class WP_Expense_Manager
     public function define_constants()
     {
         define('WP_EM_VERSION', self::version);
+        define('WP_EM_TXT_DOMAIN', 'wp-expense-manager');
         define('WP_EM_FILE', __FILE__);
         define('WP_EM_PATH', __DIR__);
         define('WP_EM_URL', plugins_url('', WP_EM_FILE));

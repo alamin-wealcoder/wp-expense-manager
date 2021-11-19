@@ -15,7 +15,7 @@ class Installer
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}expense_manager (
+        $em_table_sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}expenses (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             expense_date date NOT NULL,
             expense_amount float NOT NULL,
@@ -26,10 +26,17 @@ class Installer
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
+        $em_category_sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}expenses_category (
+            id mediumint(9) NOT NULL AUTO_INCREMENT,
+            category_name varchar(255) NOT NULL,
+            PRIMARY KEY  (id)
+        ) $charset_collate;";
+
         if (!function_exists('dbDelta')) {
             require_once ABSPATH . 'wp-admin/includes/upgrade.php';
         }
 
-        dbDelta($sql);
+        dbDelta($em_table_sql);
+        dbDelta($em_category_sql);
     }
 }
