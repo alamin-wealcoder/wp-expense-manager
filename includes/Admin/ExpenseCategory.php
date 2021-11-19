@@ -77,6 +77,19 @@ class ExpenseCategory
         exit;
     }
 
+    public function get_categories()
+    {
+        global $wpdb;
+
+        $tablename = "{$wpdb->prefix}expenses_category";
+
+        $sql = "SELECT * FROM $tablename";
+
+        $items = $wpdb->get_results($sql);
+
+        return $items;
+    }
+
     public function insert_category($name)
     {
         global $wpdb;

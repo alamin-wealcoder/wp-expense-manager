@@ -29,6 +29,7 @@ class Installer
         $em_category_sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}expenses_category (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
             category_name varchar(255) NOT NULL,
+            date_created datetime NOT NULL,
             PRIMARY KEY  (id)
         ) $charset_collate;";
 
