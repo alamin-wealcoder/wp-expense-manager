@@ -2,7 +2,15 @@
 
     <?php
     $name_err = (isset($this->messages['name_err'])) ? '<br><span style="color:#ca4a1f">' . $this->messages['name_err'] . '</span>' : '';
+
+    if (isset($_GET['updated']) && $_GET['updated'] == 'true') { ?>
+        <div class="notice notice-success is-dismissible">
+            <p><?php _e('Category has been updated successfully!', WP_EM_TXT_DOMAIN); ?></p>
+        </div>
+    <?php
+    }
     ?>
+
     <h1 class="wp-heading-inline">
         <?php _e('Expense Categories', 'wp-expense-manager'); ?>
     </h1>
@@ -48,9 +56,9 @@
                                 <td><?php echo $expense_category->category_name; ?>
 
                                     <div class="row-actions">
-                                        <span class="edit"><a href="">Edit</a> | </span>
+                                        <span class="edit"><a href="admin.php?page=expense-categories&action=edit&id=<?php echo $expense_category->id; ?>">Edit</a> | </span>
 
-                                        <span class="delete"><a href="" class="delete-tag">Delete</a> | </span>
+                                        <span class="delete"><a href="admin.php?page=expense-categories&action=delete&id=<?php echo $expense_category->id; ?>" onclick="return confirm('Are you sure you want to delete?');">Delete</a> | </span>
                                     </div>
                                 </td>
                             </tr>
@@ -59,7 +67,7 @@
                     } else {
                         ?>
                         <tr>
-                            <td><?php _e('No expense categories found.', WP_EM_TXT_DOMAIN); ?></td>
+                            <td><?php _e('No Expense Categories Found.', WP_EM_TXT_DOMAIN); ?></td>
                         </tr>
                     <?php
                     }

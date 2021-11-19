@@ -28,8 +28,18 @@ class ExpenseCategory
                 $template = __DIR__ . '/views/expense_category/category_edit.php';
                 break;
 
+            case 'delete':
+                $deleted = $this->delete_category($_GET['id']);
+                if ($deleted) {
+                    $this->messages['delete-success'] = 'Category deleted successfully.';
+                } else {
+                    $this->messages['delete-error'] = 'Error deleting category.';
+                }
+                $template = __DIR__ . '/views/expense_category/category_new.php';
+                break;
+
             default:
-                $template = __DIR__ . '/views/expense_category/category_list.php';
+                $template = __DIR__ . '/views/expense_category/category_new.php';
                 break;
         }
 
@@ -40,7 +50,9 @@ class ExpenseCategory
 
     public function form_handler()
     {
-        if (!isset($_POST['submit_expense_category'])) {return;}
+        if (!isset($_POST['submit_expense_category'])) {
+            return;
+        }
 
         if (!wp_verify_nonce($_POST['_wpnonce'], 'new-expense-category')) {
             wp_die("You are not allowed to access this page!");
@@ -57,18 +69,24 @@ class ExpenseCategory
             return;
         }
 
+        $redirected_to = admin_url('admin.php?page=expense-categories');
+
+        // Insert / Update Category
         if (isset($_POST['id'])) {
             $id = intval($_POST['id']);
-            $this->update_category($id, $name);
-            $redirected_to = admin_url('admin.php?page=expense-categories&action=edit&updated=true&id=' . $id);
+            $updated = $this->update_category($id, $name);
 
+            if ($updated) {
+                $redirected_to = admin_url('admin.php?page=expense-categories&updated=true');
+            } else {
+                $this->messages['updated'] = 'Category update failed.';
+            }
         } else {
             $inserted = $this->insert_category($name);
 
             if (!$inserted) {
                 return new \WP_Error('failed-to-insert', __('Failed to insert data', WP_EM_TXT_DOMAIN));
             } else {
-                $this->messages['success'] = 'Category added successfully.';
                 $redirected_to = admin_url('admin.php?page=expense-categories&inserted=true');
             }
         }
@@ -77,6 +95,18 @@ class ExpenseCategory
         exit;
     }
 
+    public function get_category($id)
+    {
+        global $wpdb;
+
+        $tablename = "{$wpdb->prefix}expenses_category";
+
+        $sql = "SELECT * FROM $tablename WHERE id=$id";
+
+        $items = $wpdb->get_results($sql);
+
+        return $items[0];
+    }
     public function get_categories()
     {
         global $wpdb;
@@ -108,11 +138,40 @@ class ExpenseCategory
 
     public function update_category($id, $name)
     {
+        global $wpdb;
 
+        $updated = $wpdb->update(
+            $wpdb->prefix . 'expenses_category',
+            [
+                'category_name' => $name,
+            ],
+            [
+                'id' => $id,
+            ],
+            [
+                '%s',
+            ],
+            [
+                '%d',
+            ]
+        );
+
+        return $updated;
     }
 
-    public function delete_category()
+    public function delete_category($id)
     {
+        global $wpdb;
 
+        $id = intval($id);
+
+        $deleted = $wpdb->delete(
+            $wpdb->prefix . 'expenses_category',
+            [
+                'id' => $id,
+            ]
+        );
+
+        return $deleted;
     }
 }

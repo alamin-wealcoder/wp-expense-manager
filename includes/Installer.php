@@ -20,7 +20,6 @@ class Installer
             expense_date date NOT NULL,
             expense_amount float NOT NULL,
             expense_category varchar(255) NOT NULL,
-            expense_description text NOT NULL,
             expense_paid_to varchar(255) NOT NULL,
             expense_status varchar(255) NOT NULL,
             PRIMARY KEY  (id)

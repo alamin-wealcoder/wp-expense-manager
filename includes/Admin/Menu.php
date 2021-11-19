@@ -20,20 +20,20 @@ class Menu
 
     public function add_admin_menus()
     {
-        $parent_slug = 'expense-list';
+        $parent_slug = 'expenses';
         $capability = 'manage_options';
 
         add_menu_page(
             'Expense Manager',
             'Expense Manager',
             'manage_options',
-            'expense-list',
+            'expenses',
             array($this->expense, 'render_page'),
             'dashicons-money-alt',
             6
         );
 
-        add_submenu_page($parent_slug, 'Expenses', 'Expenses', $capability, 'expense-list', array($this->expense, 'render_page'), null);
+        add_submenu_page($parent_slug, 'Expenses', 'Expenses', $capability, 'expenses', array($this->expense, 'render_page'), null);
 
         add_submenu_page($parent_slug, 'Categories', 'Categories', $capability, 'expense-categories', array($this->expense_category, 'render_page'), null);
     }
