@@ -1,14 +1,3 @@
-<style>
-    select#purpose {
-        min-height: 100px;
-        min-width: 250px;
-    }
-
-    select#purpose option {
-        border-bottom: 1px solid #eee;
-        padding: 5px;
-    }
-</style>
 <div class="wrap">
     <h3><?php _e('Add New Expense', WP_EM_TXT_DOMAIN); ?></h3>
     <hr>
