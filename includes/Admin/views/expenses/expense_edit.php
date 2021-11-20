@@ -1,7 +1,9 @@
 <?php
 $id = (isset($_GET['id'])) ? $_GET['id'] : 0;
 
-$expense = get_data_by_id($tablename, $id);
+$expense = get_data_by_id($tablename, $id)[0];
+
+// dpr($expense);
 
 $purpose = (!empty($expense->expense_category)) ? $expense->expense_category : '';
 
@@ -40,12 +42,12 @@ $paid_to = (!empty($expense->expense_paid_to)) ? $expense->expense_paid_to : '';
                         <select name="purpose[]" id="purpose" multiple="multiple">
                             <?php
                             foreach ($this->categories as $key => $category) {
-                                if ($purpose == $category->category_name || in_array($category->category_name, $multi_purpose)) {
+                                if ($purpose == $category->id || in_array($category->id, $multi_purpose)) {
                                     $selected = 'selected';
                                 } else {
                                     $selected = '';
                                 }
-                                echo '<option value="' . $category->category_name . '" ' . $selected . '>' . $category->category_name . '</option>';
+                                echo '<option value="' . $category->id . '" ' . $selected . '>' . $category->category_name . '</option>';
                             }
                             ?>
                         </select>

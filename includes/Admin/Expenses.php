@@ -133,6 +133,6 @@ class Expenses
             return;
         }
 
-        dpr($_GET);
+        wp_redirect("admin.php?page=expenses&category={$_GET['category']}&date={$_GET['date']}");
     }
 }

@@ -1,6 +1,32 @@
 <?php
 $total_expense = 0;
-$expenses = get_all($tablename);
+
+if (isset($_GET['category']) && $_GET['category'] != 0) {
+    $expenses = get_all($tablename);
+
+    $cat_id = $_GET['category'];
+    $expense_ids = '';
+
+    foreach ($expenses as $key => $expense) {
+        if ($cat_id == $expense->expense_category) {
+            $expense_ids .= $expense->id . ', ';
+        }
+        if (str_contains($expense->expense_category, ', ')) {
+            $cat_arr = explode(', ', $expense->expense_category);
+
+            if (in_array($cat_id, $cat_arr)) {
+                $expense_ids .= $expense->id . ', ';
+            }
+        }
+    }
+
+    $expense_ids = rtrim($expense_ids, ', ');
+
+    $expenses = get_data_by_id($tablename, $expense_ids);
+} else {
+    $expenses = get_all($tablename);
+}
+
 if (count($expenses) > 0) {
     foreach ($expenses as $expense) {
         $total_expense += $expense->expense_amount;
@@ -24,13 +50,15 @@ if (count($expenses) > 0) {
             <h3>Expense List</h3>
         </div>
         <div class="col-right">
-            <form action="admin.php?page=expenses" method="get">
+            <form action="#" method="get">
                 <label for="category"> </label>
                 <select name="category" id="category" class="postform">
                     <option value="0">All Categories</option>
                     <?php
+                    $cat_id = (isset($_GET['category'])) ? $_GET['category'] : 0;
                     foreach ($this->categories as $key => $category) {
-                        echo '<option value="' . $category->id . '">' . $category->category_name . '</option>';
+                        $selected = ($cat_id == $category->id) ? 'selected' : '';
+                        echo '<option value="' . $category->id . '" ' . $selected . '>' . $category->category_name . '</option>';
                     }
                     ?>
                 </select>
@@ -65,7 +93,21 @@ if (count($expenses) > 0) {
 
         <?php
         if (count($expenses) > 0) {
+
             foreach ($expenses as $expense) {
+                $category_name = '';
+
+
+                $category = get_data_by_id('expenses_category', $expense->expense_category);
+
+                if (!empty($category)) {
+                    foreach ($category as $key => $value) {
+                        $category_name .= $value->category_name . ', ';
+                    }
+
+                    $category_name = rtrim($category_name, ', ');
+                }
+
         ?>
                 <tr>
                     <td>৳ <?php echo $expense->expense_amount; ?>
@@ -77,7 +119,7 @@ if (count($expenses) > 0) {
                     </td>
                     <td><?php echo (!empty($expense->expense_date)) ? date_format(date_create($expense->expense_date), 'j M, Y - h:i A') : ''; ?>
                     </td>
-                    <td><?php echo (!empty($expense->expense_category)) ? $expense->expense_category : ''; ?>
+                    <td><?php echo (!empty($expense->expense_category)) ? $category_name : ''; ?>
                     </td>
                     <td><?php echo (!empty($expense->expense_paid_to)) ? $expense->expense_paid_to : ''; ?>
                     </td>

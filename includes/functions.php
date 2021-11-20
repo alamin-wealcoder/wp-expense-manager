@@ -8,6 +8,12 @@ function dpr($data)
     die();
 }
 
+function pr($data)
+{
+    echo '<pre>';
+    print_r($data);
+    echo '</pre>';
+}
 
 // Insert Data
 function insert_data($table, $data)
@@ -39,7 +45,26 @@ function get_all($table)
 function get_data_by_id($table, $id)
 {
     global $wpdb;
-    $result = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}$table WHERE id = $id");
+    $result = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}$table WHERE id IN ( $id )");
+
+    return $result;
+}
+
+// Get Data by Category
+function get_data_by_categories($table, $ids)
+{
+    global $wpdb;
+    $result = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}$table WHERE expense_category IN ( $ids )");
+
+    return $result;
+}
+
+// Get Data By Condition
+function get_data($table, $condition)
+{
+    global $wpdb;
+
+    $result = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}$table WHERE $condition");
 
     return $result;
 }

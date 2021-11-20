@@ -25,7 +25,7 @@
                         <select name="purpose[]" id="purpose" multiple="multiple">
                             <?php
                             foreach ($this->categories as $key => $category) {
-                                echo '<option value="' . $category->category_name . '">' . $category->category_name . '</option>';
+                                echo '<option value="' . $category->id . '">' . $category->category_name . '</option>';
                             }
                             ?>
                         </select>
