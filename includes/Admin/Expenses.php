@@ -21,6 +21,10 @@ class Expenses
 
     public function render_page()
     {
+        if ('expenses' != $_GET['page']) {
+            return;
+        }
+
         $tablename = "expenses";
 
         $action = isset($_GET['action']) ? $_GET['action'] : '';
@@ -35,13 +39,13 @@ class Expenses
                 break;
 
             case 'delete':
-                $deleted = $this->delete_expense($_GET['id']);
+                $deleted = delete_data($tablename, $_GET['id']);
                 if ($deleted) {
                     $this->messages['delete-success'] = 'Expense deleted successfully.';
                 } else {
                     $this->messages['delete-error'] = 'Error deleting expense!';
                 }
-                $template = __DIR__ . '/views/expenses/expense_new.php';
+                $template = __DIR__ . '/views/expenses/expense_list.php';
                 break;
 
             default:
@@ -68,7 +72,7 @@ class Expenses
             wp_die('You are not allowed to access this page!');
         }
 
-        $expense_id = isset($_POST['expense_id']) ? $_POST['expense_id'] : '';
+        $expense_id = isset($_POST['expense_id']) ? intval($_POST['expense_id']) : '';
         $expense_date = isset($_POST['expense_date']) ? $_POST['expense_date'] : '';
         $expense_amount = isset($_POST['amount']) ? $_POST['amount'] : '';
         $expense_category = isset($_POST['purpose']) ? $_POST['purpose'] : '';
@@ -95,7 +99,6 @@ class Expenses
             'expense_status' => 1,
         ];
 
-
         global $wpdb;
         $tablename = "{$wpdb->prefix}expenses";
 
@@ -118,9 +121,5 @@ class Expenses
 
         wp_redirect($redirected_to);
         exit;
-    }
-
-    public function delete_expense()
-    {
     }
 }

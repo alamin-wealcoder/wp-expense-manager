@@ -17,7 +17,7 @@ class Installer
 
         $em_table_sql = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}expenses (
             id mediumint(9) NOT NULL AUTO_INCREMENT,
-            expense_date date NOT NULL,
+            expense_date varchar(255) NOT NULL,
             expense_amount float NOT NULL,
             expense_category varchar(255) NOT NULL,
             expense_paid_to varchar(255) NOT NULL,

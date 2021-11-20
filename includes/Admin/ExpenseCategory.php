@@ -17,6 +17,10 @@ class ExpenseCategory
 
     public function render_page()
     {
+        if ('expense-categories' != $_GET['page']) {
+            return;
+        }
+
         $action = isset($_GET['action']) ? $_GET['action'] : '';
 
         switch ($action) {
