@@ -22,7 +22,11 @@ if (isset($_GET['category']) && $_GET['category'] != 0) {
 
     $expense_ids = rtrim($expense_ids, ', ');
 
-    $expenses = get_data_by_id($tablename, $expense_ids);
+    if (!empty($expense_ids)) {
+        $expenses = get_data_by_id($tablename, $expense_ids);
+    } else {
+        $expenses = array();
+    }
 } else {
     $expenses = get_all($tablename);
 }
