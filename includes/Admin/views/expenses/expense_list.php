@@ -37,11 +37,11 @@ if (count($expenses) > 0) {
                             <span class="delete"><a href="admin.php?page=expenses&action=delete&id=<?php echo $expense->id; ?>" onclick="return confirm('Are you sure you want to delete?');">Delete</a> </span>
                         </div>
                     </td>
-                    <td><?php echo date_format(date_create($expense->expense_date), 'j M, Y - h:i A'); ?>
+                    <td><?php echo (!empty($expense->expense_date)) ? date_format(date_create($expense->expense_date), 'j M, Y - h:i A') : ''; ?>
                     </td>
-                    <td><?php echo $expense->expense_category; ?>
+                    <td><?php echo (!empty($expense->expense_category)) ? $expense->expense_category : ''; ?>
                     </td>
-                    <td><?php echo $expense->expense_paid_to; ?>
+                    <td><?php echo (!empty($expense->expense_paid_to)) ? $expense->expense_paid_to : ''; ?>
                     </td>
                 </tr>
             <?php

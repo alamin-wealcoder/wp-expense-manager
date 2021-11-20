@@ -83,10 +83,12 @@ class Expenses
             return;
         }
 
-        if (count($expense_category) > 1) {
-            $expense_category = implode(', ', $expense_category);
-        } else {
-            $expense_category = $expense_category[0];
+        if (!empty($expense_category)) {
+            if (count($expense_category) > 1) {
+                $expense_category = implode(', ', $expense_category);
+            } else {
+                $expense_category = $expense_category[0];
+            }
         }
 
 
