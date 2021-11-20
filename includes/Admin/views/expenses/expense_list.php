@@ -13,10 +13,48 @@ if (count($expenses) > 0) {
 
     <hr>
 
+    <br>
     <div class="total-expense">
         <h1>Total Expense: ৳<span><?php echo $total_expense; ?></span></h1>
     </div>
-    <h3>Expense List</h3>
+    <br>
+
+    <div class="filter-container">
+        <div class="col-left">
+            <h3>Expense List</h3>
+        </div>
+        <div class="col-right">
+            <form action="admin.php?page=expenses" method="get">
+                <label for="category"> </label>
+                <select name="category" id="category" class="postform">
+                    <option value="0">All Categories</option>
+                    <?php
+                    foreach ($this->categories as $key => $category) {
+                        echo '<option value="' . $category->id . '">' . $category->category_name . '</option>';
+                    }
+                    ?>
+                </select>
+
+
+                <label for="date"> </label>
+                <select name="date" id="date" class="postform">
+                    <option value="0">All Date</option>
+                    <?php
+                    foreach ($expenses as $key => $expense) {
+                        echo '<option value="' . $expense->expense_date . '">' . $expense->category_date . '</option>';
+                    }
+                    ?>
+                </select>
+
+                <?php
+                submit_button('Filter', 'submit', 'expense_filter', false, null);
+                ?>
+
+            </form>
+        </div>
+    </div>
+
+
     <table class="wp-list-table widefat fixed striped">
         <tr>
             <th><strong>Amount</strong></th>

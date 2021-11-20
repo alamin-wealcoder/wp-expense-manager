@@ -17,6 +17,7 @@ class Expenses
         $this->categories = $cat_obj->get_categories();
 
         $this->form_handler();
+        $this->filter_handler();
     }
 
     public function render_page()
@@ -123,5 +124,15 @@ class Expenses
 
         wp_redirect($redirected_to);
         exit;
+    }
+
+
+    public function filter_handler()
+    {
+        if (!isset($_GET['expense_filter'])) {
+            return;
+        }
+
+        dpr($_GET);
     }
 }
