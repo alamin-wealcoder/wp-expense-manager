@@ -10,14 +10,17 @@ class Expenses
 {
     public $messages = [];
     public $categories;
+    public $tablename;
 
     public function __construct()
     {
+        $this->tablename = "expenses";
+
         $cat_obj = new ExpenseCategory();
         $this->categories = $cat_obj->get_categories();
 
         $this->form_handler();
-        $this->filter_handler();
+        $this->filter_submit();
     }
 
     public function render_page()
@@ -25,8 +28,6 @@ class Expenses
         if ('expenses' != $_GET['page']) {
             return;
         }
-
-        $tablename = "expenses";
 
         $action = isset($_GET['action']) ? $_GET['action'] : '';
 
@@ -40,7 +41,7 @@ class Expenses
                 break;
 
             case 'delete':
-                $deleted = delete_data($tablename, $_GET['id']);
+                $deleted = delete_data($this->tablename, $_GET['id']);
                 if ($deleted) {
                     $this->messages['delete-success'] = 'Expense deleted successfully.';
                 } else {
@@ -103,10 +104,10 @@ class Expenses
         ];
 
         global $wpdb;
-        $tablename = "{$wpdb->prefix}expenses";
+        $this->tablename = "{$wpdb->prefix}expenses";
 
         if (empty($expense_id)) {
-            $inserted = insert_data($tablename, $expense_data);
+            $inserted = insert_data($this->tablename, $expense_data);
 
             if (!$inserted) {
                 return new \WP_Error('failed-to-insert', __('Failed to insert data', WP_EM_TXT_DOMAIN));
@@ -114,7 +115,7 @@ class Expenses
                 $redirected_to = admin_url('admin.php?page=expenses&inserted=true');
             }
         } else {
-            $updated = update_data($tablename, $expense_data, ['id' => $expense_id]);
+            $updated = update_data($this->tablename, $expense_data, ['id' => $expense_id]);
             if ($updated) {
                 $redirected_to = admin_url('admin.php?page=expenses&updated=true');
             } else {
@@ -127,12 +128,89 @@ class Expenses
     }
 
 
-    public function filter_handler()
+    public function filter_submit()
     {
         if (!isset($_GET['expense_filter'])) {
             return;
         }
 
-        wp_redirect("admin.php?page=expenses&category={$_GET['category']}&date={$_GET['date']}");
+        wp_redirect("admin.php?page=expenses&category={$_GET['category']}&year={$_GET['year']}&month={$_GET['month']}");
+    }
+
+
+    public function filter_by_params($expenses)
+    {
+        //Filter By Category
+        if (isset($_GET['category']) && $_GET['category'] != 0) {
+
+            $cat_id = $_GET['category'];
+            $expense_ids = '';
+
+            foreach ($expenses as $key => $expense) {
+                if ($cat_id == $expense->expense_category) {
+                    $expense_ids .= $expense->id . ', ';
+                }
+                if (str_contains($expense->expense_category, ', ')) {
+                    $cat_arr = explode(', ', $expense->expense_category);
+
+                    if (in_array($cat_id, $cat_arr)) {
+                        $expense_ids .= $expense->id . ', ';
+                    }
+                }
+            }
+
+            $expense_ids = rtrim($expense_ids, ', ');
+
+            if (!empty($expense_ids)) {
+                $expenses = get_data_by_id($this->tablename, $expense_ids);
+            } else {
+                $expenses = array();
+            }
+        }
+
+        // Filter By Year
+        if (isset($_GET['year']) && $_GET['year'] != 0) {
+            $year = $_GET['year'];
+            $expense_ids = '';
+
+            foreach ($expenses as $key => $expense) {
+                if (substr($expense->expense_date, 0, 4) == $year) {
+                    $expense_ids .= $expense->id . ', ';
+                }
+            }
+
+            $expense_ids = rtrim($expense_ids, ', ');
+
+            if (!empty($expense_ids)) {
+                $expenses = get_data_by_id($this->tablename, $expense_ids);
+            } else {
+                $expenses = array();
+            }
+        }
+
+        // Filter By Month
+        if (isset($_GET['month']) && $_GET['month'] != 0) {
+            $choosen_month = $_GET['month'];
+            $expense_ids = '';
+
+
+            foreach ($expenses as $key => $expense) {
+                $expense_month = substr($expense->expense_date, 5, 2);
+
+                if ($expense_month == $choosen_month) {
+                    $expense_ids .= $expense->id . ', ';
+                }
+            }
+
+            $expense_ids = rtrim($expense_ids, ', ');
+
+            if (!empty($expense_ids)) {
+                $expenses = get_data_by_id($this->tablename, $expense_ids);
+            } else {
+                $expenses = array();
+            }
+        }
+
+        return $expenses;
     }
 }

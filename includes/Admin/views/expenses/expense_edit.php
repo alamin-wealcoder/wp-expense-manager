@@ -1,9 +1,7 @@
 <?php
 $id = (isset($_GET['id'])) ? $_GET['id'] : 0;
 
-$expense = get_data_by_id($tablename, $id)[0];
-
-// dpr($expense);
+$expense = get_data_by_id($this->tablename, $id)[0];
 
 $purpose = (!empty($expense->expense_category)) ? $expense->expense_category : '';
 

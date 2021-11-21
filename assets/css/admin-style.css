@@ -2,7 +2,9 @@
     background: #0c67b1;
     color: #fff;
     display: inline-block;
+    min-width: 250px;
     padding: 20px;
+    text-align: center;
 }
 .filter-container{
     display: flex;

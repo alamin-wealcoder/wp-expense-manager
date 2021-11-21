@@ -1,35 +1,10 @@
 <?php
+
 $total_expense = 0;
 
-if (isset($_GET['category']) && $_GET['category'] != 0) {
-    $expenses = get_all($tablename);
+$expenses = get_all($this->tablename);
 
-    $cat_id = $_GET['category'];
-    $expense_ids = '';
-
-    foreach ($expenses as $key => $expense) {
-        if ($cat_id == $expense->expense_category) {
-            $expense_ids .= $expense->id . ', ';
-        }
-        if (str_contains($expense->expense_category, ', ')) {
-            $cat_arr = explode(', ', $expense->expense_category);
-
-            if (in_array($cat_id, $cat_arr)) {
-                $expense_ids .= $expense->id . ', ';
-            }
-        }
-    }
-
-    $expense_ids = rtrim($expense_ids, ', ');
-
-    if (!empty($expense_ids)) {
-        $expenses = get_data_by_id($tablename, $expense_ids);
-    } else {
-        $expenses = array();
-    }
-} else {
-    $expenses = get_all($tablename);
-}
+$expenses = $this->filter_by_params($expenses);
 
 if (count($expenses) > 0) {
     foreach ($expenses as $expense) {
@@ -68,12 +43,34 @@ if (count($expenses) > 0) {
                 </select>
 
 
-                <label for="date"> </label>
-                <select name="date" id="date" class="postform">
-                    <option value="0">All Date</option>
+                <label for="year"> </label>
+                <select name="year" id="year" class="postform">
+                    <option value="0" selected>All Year</option>
                     <?php
-                    foreach ($expenses as $key => $expense) {
-                        echo '<option value="' . $expense->expense_date . '">' . $expense->category_date . '</option>';
+                    for ($i = date('Y'); $i >= 2000; $i--) {
+                        if (isset($_GET['year'])) {
+                            $selected = ($_GET['year'] == $i) ? 'selected' : '';
+                        } else {
+                            // $selected = ($i == date('Y')) ? 'selected' : '';
+                        }
+
+                        echo '<option value="' . $i . '" ' . $selected . '>' . $i . '</option>';
+                    }
+                    ?>
+                </select>
+
+                <label for="month"></label>
+                <select name="month" id="month" class="postform">
+                    <option value="0" selected>All Month</option>
+                    <?php
+                    for ($i = 1; $i <= 12; $i++) {
+                        if (isset($_GET['month'])) {
+                            $selected = ($_GET['month'] == $i) ? 'selected' : '';
+                        } else {
+                            // $selected = ($i == date('m')) ? 'selected' : '';
+                        }
+
+                        echo '<option value="' . $i . '" ' . $selected . '>' . date('F', mktime(0, 0, 0, $i, 1)) . '</option>';
                     }
                     ?>
                 </select>
