@@ -13,8 +13,13 @@
 .filter-container .col-left{
     flex-basis: 33%;
 }
-.filter-container .col-right{
+.filter-container .col-right {
     flex-basis: 66%;
+    display: flex;
+    justify-content: space-between;
+}
+.filter-container input#search {
+    min-width: 220px;
 }
 select#purpose {
     min-height: 100px;

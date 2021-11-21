@@ -6,6 +6,8 @@ $expenses = get_all($this->tablename);
 
 $expenses = $this->filter_by_params($expenses);
 
+$expenses = $this->expense_search($expenses);
+
 if (count($expenses) > 0) {
     foreach ($expenses as $expense) {
         $total_expense += $expense->expense_amount;
@@ -80,6 +82,15 @@ if (count($expenses) > 0) {
                 ?>
 
             </form>
+
+            <!-- Search Form -->
+            <form action="#" method="get">
+                <label for="search_expense"></label>
+                <input type="text" name="search_expense" id="search_expense" placeholder="Search Expense" value="<?php echo (isset($_GET['search_expense'])) ? $_GET['search_expense'] : ''; ?>">
+                <?php
+                submit_button('Search', 'submit', 'expense_search', false, null);
+                ?>
+            </form>
         </div>
     </div>
 
@@ -118,7 +129,7 @@ if (count($expenses) > 0) {
                             <span class="delete"><a href="admin.php?page=expenses&action=delete&id=<?php echo $expense->id; ?>" onclick="return confirm('Are you sure you want to delete?');">Delete</a> </span>
                         </div>
                     </td>
-                    <td><?php echo (!empty($expense->expense_date)) ? date_format(date_create($expense->expense_date), 'j M, Y - h:i A') : ''; ?>
+                    <td><?php echo (!empty($expense->expense_date)) ? date_format(date_create($expense->expense_date), 'j F, Y - h:i A') : ''; ?>
                     </td>
                     <td><?php echo (!empty($expense->expense_category)) ? $category_name : ''; ?>
                     </td>

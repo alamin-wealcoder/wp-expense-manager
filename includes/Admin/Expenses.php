@@ -19,7 +19,12 @@ class Expenses
         $cat_obj = new ExpenseCategory();
         $this->categories = $cat_obj->get_categories();
 
-        $this->form_handler();
+
+        if (isset($_POST['submit_expense'])) {
+            $this->form_handler();
+        }
+
+
         $this->filter_submit();
     }
 
@@ -62,10 +67,6 @@ class Expenses
 
     public function form_handler()
     {
-        if (!isset($_POST['submit_expense'])) {
-            return;
-        }
-
         if (!wp_verify_nonce($_POST['_wpnonce'], 'new-expense')) {
             wp_die("You are not allowed to access this page!");
         }
@@ -130,13 +131,17 @@ class Expenses
 
     public function filter_submit()
     {
-        if (!isset($_GET['expense_filter'])) {
-            return;
+        if (isset($_GET['expense_filter'])) {
+            wp_redirect("admin.php?page=expenses&category={$_GET['category']}&year={$_GET['year']}&month={$_GET['month']}");
+            exit;
         }
 
-        wp_redirect("admin.php?page=expenses&category={$_GET['category']}&year={$_GET['year']}&month={$_GET['month']}");
-    }
 
+        if (isset($_GET['expense_search'])) {
+            wp_redirect("admin.php?page=expenses&search_expense={$_GET['search_expense']}");
+            exit;
+        }
+    }
 
     public function filter_by_params($expenses)
     {
@@ -198,6 +203,57 @@ class Expenses
                 $expense_month = substr($expense->expense_date, 5, 2);
 
                 if ($expense_month == $choosen_month) {
+                    $expense_ids .= $expense->id . ', ';
+                }
+            }
+
+            $expense_ids = rtrim($expense_ids, ', ');
+
+            if (!empty($expense_ids)) {
+                $expenses = get_data_by_id($this->tablename, $expense_ids);
+            } else {
+                $expenses = array();
+            }
+        }
+
+        return $expenses;
+    }
+
+    // Expense Search Function
+    public function expense_search($expenses)
+    {
+        if (isset($_GET['search_expense']) && !empty($_GET['search_expense'])) {
+            $search_term = strtolower($_GET['search_expense']);
+            $expense_ids = '';
+
+            foreach ($expenses as $key => $expense) {
+
+                // Search By Category
+                if (str_contains($expense->expense_category, ', ')) {
+                    $cat_arr = explode(', ', $expense->expense_category);
+                    foreach ($cat_arr as $cat) {
+                        $cat = get_data('expenses_category', 'id=' . $cat);
+
+                        if (str_contains(strtolower($cat[0]->category_name), $search_term)) {
+                            $expense_ids .= $expense->id . ', ';
+                        }
+                    }
+                } else {
+                    $cat = get_data('expenses_category', 'id=' . $expense->expense_category);
+                    if (str_contains(strtolower($cat[0]->category_name), $search_term)) {
+                        $expense_ids .= $expense->id . ', ';
+                    }
+                }
+
+                // Search By Amount, Paid To
+                if (str_contains(strtolower($expense->expense_paid_to), $search_term) || str_contains($expense->expense_amount, $search_term)) {
+                    $expense_ids .= $expense->id . ', ';
+                }
+
+
+                // Search By Date
+                $date = date_format(date_create($expense->expense_date), 'j F, Y');
+                if (str_contains(strtolower($date), $search_term)) {
                     $expense_ids .= $expense->id . ', ';
                 }
             }
