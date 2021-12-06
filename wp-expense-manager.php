@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: WP Expense Manager
  * Plugin URI: https://example.com/plugins/the-basics/
